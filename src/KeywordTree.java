@@ -11,6 +11,7 @@ public class KeywordTree {
 
     public KeywordTree() {
         this.root = new KeywordTreeVertex();
+        currentVertex = root;
     }
 
     public void add(String argString) {
@@ -37,29 +38,62 @@ public class KeywordTree {
         return true;
     }
 
-    public void findAllPatterns(String argString)
+//    public void findAllPatterns(String argString)
+//    {
+//        KeywordTreeVertex currentVertex = root;
+//        int size = argString.length();
+//        for (int i = 0; i < size; i++)
+//        {
+//            char currentChar = argString.toCharArray()[i];
+//            currentVertex = currentVertex.getAutoMove(currentChar);
+//            check(currentVertex, i + 1);
+//        }
+//    }
+
+    public boolean checkString(String argString)
     {
         KeywordTreeVertex currentVertex = root;
-        int size = argString.length();
-        for (int i = 0; i < size; i++)
+        for (char currentChar : argString.toCharArray())
         {
-            char currentChar = argString.toCharArray()[i];
             currentVertex = currentVertex.getAutoMove(currentChar);
-            check(currentVertex, i + 1);
+            if (check(currentVertex))
+            {
+                return true;
+            }
         }
+        return false;
     }
 
-    private void check(KeywordTreeVertex vertex, int index)
+    private KeywordTreeVertex currentVertex;
+    private int currentRowNumber = 1;
+
+    public boolean next(char currentChar)
+    {
+        if (currentChar == '\n')
+        {
+            currentVertex = root;
+            currentRowNumber++;
+            return false;
+        }
+        currentVertex = currentVertex.getAutoMove(currentChar);
+        return check(currentVertex);
+    }
+
+    public int getCurrentRowNumber()
+    {
+        return currentRowNumber;
+    }
+
+    private boolean check(KeywordTreeVertex vertex)
     {
         //System.out.println("check entered " + (vertex.getGoodSuffixLink() == null));
         for (KeywordTreeVertex currentVertex = vertex; !currentVertex.isRoot(); currentVertex = currentVertex.getGoodSuffixLink())
         {
             if (currentVertex.isPattern())
             {
-                String foundPattern = patterns.get(currentVertex.getPatternNumber() - 1);
-                System.out.println(1 + index - foundPattern.length() +
-                " " + foundPattern);
+                return true;
             }
         }
+        return false;
     }
 }
