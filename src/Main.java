@@ -24,64 +24,38 @@ public class Main {
         KeywordTree tree = new KeywordTree();
         tree.add(pattern);
 
-        FileChannel channel = new FileInputStream(filenames.get(0)).getChannel();
         byte[] byteArray = new byte[128000];
         ByteBuffer buffer = ByteBuffer.wrap(byteArray);
-        int count;
-        while ((count = channel.read(buffer)) != -1)
+        long time1 = 0;
+        long time2 = 0;
+        long time3 = 0;
+        for (String filename: filenames)
         {
-            for (int i = 0; i < count; i++)
+            long start1 = System.nanoTime();
+            tree.resetRowCounter();
+            try (FileChannel channel = new FileInputStream(filename).getChannel())
             {
-                if (tree.next((char)byteArray[i]))
+                int count;
+                while ((count = channel.read(buffer)) != -1)
+                {
+                    long start2 = System.nanoTime();
+                    for (int i = 0; i < count; i++)
                     {
-                        System.out.println(filenames.get(0) + ":" + tree.getCurrentRowNumber());
+                        if (tree.next((char)byteArray[i]))
+                        {
+                            long start3 = System.nanoTime();
+                            System.out.println(filename + ":" + tree.getCurrentRowNumber());
+                            time3 += System.nanoTime() - start3;
+                        }
+                        buffer.clear();
                     }
-                    buffer.clear();
+                    time2 += System.nanoTime() - start2;
+                }
             }
+            time1 += System.nanoTime() - start1;
         }
-
-
-        //System.out.println(tree.checkString("right light.... In my opinion perpetual peace is possible but--I do not"));
-
-//        for (String filename : filenames)
-//        {
-//            BufferedReader reader = new BufferedReader(new FileReader(filename));
-//            String currentLine = reader.readLine();
-//            int lineCounter = 1;
-//            while (currentLine != null)
-//            {
-//                if (tree.checkString(currentLine))
-//                {
-//                    System.out.println(filename + " " + lineCounter);
-//                }
-//                currentLine = reader.readLine();
-//                lineCounter++;
-//            }
-
-        //AtomicBoolean eofReached = new AtomicBoolean(false);
-        //ByteBuffer buffer = ByteBuffer.allocate(1024);
-        //Thread thread = new Thread(new Task(buffer, eofReached));
-        //thread.start();
-
-//        for (String filename : filenames)
-//        {
-//            Path filepath = Paths.get(filename);
-//            try (ByteChannel channel = Files.newByteChannel(filepath))
-//            {
-//                int count;
-//                do {
-//                    count = channel.read(buffer);
-//                    if (count != -1)
-//                    {
-//                        buffer.rewind();
-//                        for (int i = 0; i < count; i++)
-//                            if (tree.next((char)buffer.get()))
-//                            {
-//                                System.out.println(filename + ":" + tree.getCurrentRowNumber());
-//                            }
-//                    }
-//                } while (count != -1);
-//            }
-//        }
+        System.out.println("1:" + time1);
+        System.out.println("2:" + time2);
+        System.out.println("3:" + time3);
     }
 }

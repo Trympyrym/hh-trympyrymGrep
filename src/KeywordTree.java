@@ -27,45 +27,14 @@ public class KeywordTree {
         currentVertex.setPatternNumber(patterns.size());
     }
 
-    private Boolean contains(String argString) {
-        KeywordTreeVertex currentVertex = root;
-        for (char currentChar : argString.toCharArray()) {
-            if (!currentVertex.hasChild(currentChar)) {
-                return false;
-            }
-            currentVertex = currentVertex.getNext(currentChar);
-        }
-        return true;
-    }
-
-//    public void findAllPatterns(String argString)
-//    {
-//        KeywordTreeVertex currentVertex = root;
-//        int size = argString.length();
-//        for (int i = 0; i < size; i++)
-//        {
-//            char currentChar = argString.toCharArray()[i];
-//            currentVertex = currentVertex.getAutoMove(currentChar);
-//            check(currentVertex, i + 1);
-//        }
-//    }
-
-    public boolean checkString(String argString)
-    {
-        KeywordTreeVertex currentVertex = root;
-        for (char currentChar : argString.toCharArray())
-        {
-            currentVertex = currentVertex.getAutoMove(currentChar);
-            if (check(currentVertex))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private KeywordTreeVertex currentVertex;
     private int currentRowNumber = 1;
+    private boolean patternFound = false;
+
+    public void resetRowCounter()
+    {
+        currentRowNumber = 1;
+    }
 
     public boolean next(char currentChar)
     {
@@ -73,10 +42,24 @@ public class KeywordTree {
         {
             currentVertex = root;
             currentRowNumber++;
+            patternFound = false;
+            return false;
+        }
+        if (patternFound)
+        {
             return false;
         }
         currentVertex = currentVertex.getAutoMove(currentChar);
-        return check(currentVertex);
+        boolean result = check(currentVertex);
+        if (result)
+        {
+            patternFound = true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public int getCurrentRowNumber()

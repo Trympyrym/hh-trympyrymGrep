@@ -8,14 +8,14 @@ public class KeywordTreeVertex {
 
     public KeywordTreeVertex()
     {
-        this(null, null);
+        this(null, (char)0);
     }
 
-    public KeywordTreeVertex(KeywordTreeVertex parent, Character parentSymbol)
+    public KeywordTreeVertex(KeywordTreeVertex parent, char symbol)
     {
         this.patternNumber = 0;
         this.parent = parent;
-        this.parentSymbol = parentSymbol;
+        this.symbol = symbol;
     }
 
     public Boolean hasChild(Character argSymbol)
@@ -23,9 +23,10 @@ public class KeywordTreeVertex {
         return children.containsKey(argSymbol);
     }
 
-    public void makeChild(Character argSymbol)
+    public void makeChild(char argSymbol)
     {
-        children.put(argSymbol, new KeywordTreeVertex(this, argSymbol));
+        children.put(argSymbol, new KeywordTreeVertex(
+                this, argSymbol));
     }
 
     public KeywordTreeVertex getNext(Character argSymbol)
@@ -33,7 +34,7 @@ public class KeywordTreeVertex {
         return children.get(argSymbol);
     }
 
-    public void setPatternNumber(Integer patternNumber) {
+    public void setPatternNumber(int patternNumber) {
         this.patternNumber= patternNumber;
     }
 
@@ -54,7 +55,7 @@ public class KeywordTreeVertex {
         return (this.parent == null);
     }
 
-    private Character parentSymbol = null;
+    private char symbol;
 
     Map<Character, KeywordTreeVertex> children = new HashMap<>();
     Map<Character, KeywordTreeVertex> autoMove = new HashMap<>();
@@ -110,7 +111,7 @@ public class KeywordTreeVertex {
             }
             else
             {
-                suffixLink = parent.getSuffixLink().getAutoMove(parentSymbol);
+                suffixLink = parent.getSuffixLink().getAutoMove(symbol);
             }
         }
     }
